@@ -1,4 +1,6 @@
-{:aliases
+{:deps {org.clojure/tools.cli {:mvn/version "0.3.5"}}
+ :paths ["resources" "src"]
+ :aliases
  {:conceal {:main-opts ["-m" "conceal.core"]}
   :dev     {:extra-paths ["dev"]}
   :test
@@ -17,6 +19,4 @@
     {:git/url "https://github.com/cognitect-labs/test-runner.git"
      :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}}
    :extra-paths ["test"]
-   :main-opts   ["-m" "cognitect.test-runner" "-d" "test"]}}
- :paths ["resources" "src"]
- :deps {org.clojure/tools.cli {:mvn/version "0.3.5"}}}
+   :main-opts   ["-m" "cognitect.test-runner" "-d" "test"]}}}
