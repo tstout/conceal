@@ -2,7 +2,7 @@
 verb - keep from sight; hide.
 
 
-Utility for hiding small amounts of text that need to be private.
+Utility for concealing small amounts of text.
 
 Usage:
 ```clojure
