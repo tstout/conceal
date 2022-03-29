@@ -41,7 +41,7 @@
       (.decode text)))
 
 (defn ^String conceal
-  "Perform a symmetric encryption of a string. Set mk-opts to create
+  "Perform a symmetric encryption of a string. Use mk-opts to create
    crypto options."
   [opts]
   (let [{:keys [algorithm input key i-vec]} opts
@@ -66,12 +66,13 @@
   *e
   @init-vec
 
-  (def cipher-text
-    (conceal (mk-opts "foo-bar" "5713853")))
-
-  cipher-text
-
-  (reveal (mk-opts cipher-text "5713853"))
+  (->> "key-to-encrypt-decrypt"
+       (mk-opts "text to encrypt")
+       conceal)
+  
+  (-> "aOoOhYZ9S4Kr0iTW900NZQ=="
+       (mk-opts "key-to-encrypt-decrypt")
+      reveal)
 
   (time (reveal (mk-opts cipher-text "5713853")))
   ;;
