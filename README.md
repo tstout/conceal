@@ -43,11 +43,16 @@ Add this to your ~/.clojure/deps.edn
 ```
 ```
 export CONCEAL_KEY=8675309
+```
 
+conceal (encrypt)
+```
 clj -M:conceal -c secret-text
 u15arZvE/9IReo5nWHFb3A==
+```
 
+reveal (decrypt)
+```
 clj -M:conceal -r u15arZvE/9IReo5nWHFb3A==
 secret-text
-
 ```
