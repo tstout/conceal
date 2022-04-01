@@ -41,6 +41,7 @@ Add this to your ~/.clojure/deps.edn
           :main-opts ["-m" "conceal.core"]}
 
 ```
+```
 export CONCEAL_KEY=8675309
 
 clj -M:conceal -c secret-text
