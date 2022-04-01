@@ -11,21 +11,22 @@
            [java.util Base64]))
 
 (defn ^SecretKey key-from-pass
-  "Generate a key form a password and a salt value."
+  "Generate a key from a password and a salt value."
   [^String pass ^String salt]
   (let [factory (SecretKeyFactory/getInstance "PBKDF2WithHmacSHA256")
         spec (PBEKeySpec. (.toCharArray pass) (.getBytes salt) 65536 256)]
     (SecretKeySpec. (.getEncoded (.generateSecret factory spec)) "AES")))
 
 (def init-vec
-  "A crypto initialization vector"
+  "A default crypto initialization vector"
   (delay
    (-> [100 -48 47 -50 90 78 -94 127 -5 -120 -10 -7 63 63 92 99]
        byte-array
        IvParameterSpec.)))
 
 (defn mk-opts
-  "Create a map of crypto options suitable for use with conceal/reveal"
+  "Create a default map of crypto options suitable for use with conceal/reveal.
+   Feel free to merge/assoc/update as desired."
   [input pass]
   {:algorithm "AES/CBC/PKCS5Padding"
    :input     input
@@ -42,7 +43,7 @@
 
 (defn ^String conceal
   "Perform a symmetric encryption of a string. Use mk-opts to create
-   crypto options."
+   default crypto options and customize as desired."
   [opts]
   (let [{:keys [algorithm input key i-vec]} opts
         cipher (Cipher/getInstance algorithm)]
@@ -60,20 +61,59 @@
         (.doFinal (base64-decode input))
         String.)))
 
-(defn -main [& args] (println "hello world"))
+(defn key-from-env
+  "Lookup crypto key password from env variable CONCEAL_KEY.
+   If the variable is not set an exception is thrown."
+  []
+  (if-let [key (System/getenv "CONCEAL_KEY")]
+    key
+    (throw (AssertionError.
+            "Expected key to be found in env var CONCEAL_KEY"))))
+
+(def cli-options
+  [["-c" "--conceal-text text-to-encrypt" "Encrypt a string"]
+   ["-r" "--reveal-text text-to-decrypt" "Decrypt a string"]
+   ["-h" "--help"]])
+
+(defn run
+  "Execute the appropriate action based on command-line args."
+  [options]
+  (let [{:keys [conceal-text reveal-text]} options]
+    (cond
+      conceal-text (println (->> (key-from-env)
+                                 (mk-opts conceal-text)
+                                 conceal))
+      reveal-text (println (-> reveal-text
+                               (mk-opts (key-from-env))
+                               reveal)))))
+
+(defn -main [& args]
+  (let [{:keys [options
+                #_arguments
+                summary
+                errors]} (parse-opts args cli-options)]
+    (cond
+      errors               (println errors)
+      (or (empty? options)
+          (:help options)) (println summary)
+      :else                (run options))))
 
 (comment
   *e
   @init-vec
 
+  (key-from-env)
   (->> "key-to-encrypt-decrypt"
        (mk-opts "text to encrypt")
        conceal)
-  
+
   (-> "aOoOhYZ9S4Kr0iTW900NZQ=="
-       (mk-opts "key-to-encrypt-decrypt")
+      (mk-opts "key-to-encrypt-decrypt")
       reveal)
 
-  (time (reveal (mk-opts cipher-text "5713853")))
+  (time (-> "aOoOhYZ9S4Kr0iTW900NZQ=="
+            (mk-opts "key-to-encrypt-decrypt")
+            reveal))
+
   ;;
   )
