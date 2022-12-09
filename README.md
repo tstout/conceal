@@ -41,6 +41,7 @@ Add this to your ~/.clojure/deps.edn
           :main-opts ["-m" "conceal.core"]}
 
 ```
+In your shell environment:
 ```
 export CONCEAL_KEY=8675309
 ```
