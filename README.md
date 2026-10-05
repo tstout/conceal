@@ -35,8 +35,8 @@ Add this to your ~/.clojure/deps.edn
 ;; In your :aliases map:
 :conceal {:extra-deps {com.github.tstout/conceal
                         {:git/url "https://github.com/tstout/conceal"
-                         :git/tag "v1.0.0"
-                         :git/sha "e9ab405"}}
+                         :git/tag "v2.0.0"
+                         :git/sha "411d5f6"}}
           :main-opts ["-m" "conceal.core"]}
 
 ```
