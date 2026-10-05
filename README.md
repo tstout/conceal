@@ -9,8 +9,8 @@ Usage as a library:
 ;; In deps.edn, add this to your :deps map:
 com.github.tstout/conceal
     {:git/url "https://github.com/tstout/conceal"
-     :git/tag "v1.0.0"
-     :git/sha "e9ab405"}
+     :git/tag "v2.0.0"
+     :git/sha "411d5f6"}
 
 
 ;;In an/example.clj
