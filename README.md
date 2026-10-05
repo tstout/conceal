@@ -17,19 +17,18 @@ com.github.tstout/conceal
 (ns an.example 
   (:require [conceal.core :refer [reveal conceal mk-opts]]))
 
-;;  
-;; Encrypt
-;;
-(->> "key-to-encrypt-decrypt"
-     (mk-opts "text to encrypt")
-     conceal) 
-;;
-;; Decrypt
-;;       
-(-> "aOoOhYZ9S4Kr0iTW900NZQ=="
-    (mk-opts "key-to-encrypt-decrypt")
-    reveal) 
+;; Encrypt and decrypt. Each call to conceal creates a fresh random salt
+;; and AES-GCM nonce; the returned v1:... value contains both with the ciphertext.
+(let [password "a-long-random-password"
+    ciphertext (conceal (mk-opts "text to encrypt" password))]
+  (reveal (mk-opts ciphertext password)))
 ```
+
+The password is processed with PBKDF2-HMAC-SHA256 (600,000 iterations) to derive
+an AES-256 key. Encryption uses AES-GCM with a fresh 16-byte salt and 12-byte
+nonce per message. Keep passwords strong and secret. Ciphertexts created by
+versions before this format change (unprefixed CBC ciphertexts) are not
+compatible and cannot be decrypted by this version.
 Usage via command line:
 Add this to your ~/.clojure/deps.edn
 ```clojure
@@ -49,11 +48,11 @@ export CONCEAL_KEY=8675309
 conceal (encrypt)
 ```
 clj -M:conceal -c secret-text
-u15arZvE/9IReo5nWHFb3A==
+v1:<randomized-base64-envelope>
 ```
 
 reveal (decrypt)
 ```
-clj -M:conceal -r u15arZvE/9IReo5nWHFb3A==
+clj -M:conceal -r 'v1:<randomized-base64-envelope>'
 secret-text
 ```
